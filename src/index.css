@@ -34,45 +34,56 @@ code {
   padding: 0 15px;
 }
 
+.MuiDialog-paperScrollPaper {
+  width: 100%;
+}
+
+tbody .MuiTableCell-root {
+  border-right: 1px solid
+  rgba(224, 224, 224, 1);
+}
+
+.MuiTableCell-body {
+  font-size: 18px !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
 
-.form-control {
-  width: 400px;
-  height: 60px;
+.cursor-pointer:hover p{
+  text-decoration: underline;
 }
 
-.year-picker {
-  width: 400px !important;
-  height: 60px;
-  margin: 0.5rem auto;
+.portfolio-button {
+    color: rgb(255, 255, 255);
+    font-size: 16px;
+    background-color: rgb(5, 177, 105);
+    margin: 0px;
+    border-radius: 4px;
+    transition: all 80ms ease-in-out 0s;
+    padding: 12px;
+    border: 1px solid rgb(5, 177, 105);
+    position: relative;
+    top: 5px;
 }
 
-.picker-panel {
-  width: 400px !important;
-  z-index: 9999;
+.dialog-header {
+  background: #1976d2;
+  color: #fff;
 }
 
-.input-wrapper {
-  width: 395px;
-}
-
-.form-button {
-  width: 400px;
-  height: 60px;
-}
-
-.backButton {
+.progressBar-container {
   position: absolute;
-  top: 10%;
-  left: 10%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.previous {
-  background-color: #f1f1f1;
-  color: black;
+.progressBar {
+  width: 64px !important;
+}
+
+a, a:hover {
   text-decoration: none;
-  display: inline-block;
-  padding: 8px 16px;
 }

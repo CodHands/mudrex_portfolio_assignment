@@ -1,93 +1,100 @@
-import React, {Component, Fragment} from 'react';
+import React, {Fragment} from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
 
-//api import
-import {fetchCapData} from '../services/marketService';
 
-//material ui imports
-import MaterialTable from 'material-table';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+const useStyles = makeStyles({
+  root: {
+    width: '100%',
+  },
+  tableWrapper: {
+    maxHeight: 440,
+    overflow: 'auto',
+  },
+});
 
-//config import
-import {IMAGE_URL} from '../config';
+export default function StickyHeadTable(props) {
+  const classes = useStyles();
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-const headerStyle = {
-    fontWeight: 'bold'
-}
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-class DataTable extends Component {
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
 
-    constructor(props){
-        super(props);
-        this.theme = createMuiTheme({
-            typography: {
-                fontFamily: 'Barlow'
-              }
-        });
-        this.state = {
-            coinsTable : {
-                columns: [
-                    { title: '', field: 'imageUrl', headerStyle,
-                render: rowData => <img src={rowData.imageUrl} style={{width: 40, borderRadius: '50%'}}/> },
-                    { title: 'Name', field: 'name', headerStyle },
-                    { title: 'Symbol', field: 'symbol', headerStyle},
-                    { title: 'Price (in INR)', field: 'price', type: 'numeric',headerStyle},
-                    {
-                        title: 'Rank',
-                        field: 'rank',headerStyle
-                    },
-                    {
-                        title: 'Circulating Supply',
-                        field: 'supply', headerStyle
-                    }
-                ],
-                data: []
-            }
-        }
-    }
-
-    componentDidMount(){
-        this.fetchCoinMarketCap()
-    }
-
-   fetchCoinMarketCap = async() => {
-    let response = await fetchCapData()
-    let data = response.map((coin) => {
-        return {
-            name: coin.name,
-            symbol: coin.symbol,
-            price: coin.quote['USD'].price,
-            rank: coin.cmc_rank,
-            supply: coin.circulating_supply,
-            imageUrl: `${IMAGE_URL}${coin.slug.toLowerCase()}.png` 
-        }
-    })
-    this.setState({
-        coinsTable: {
-            ...this.state.coinsTable,
-            data
-        }
-    })
+  const handleClick = (row) => {
+    console.log(row)
+      props.isOpen(row);
   }
+  
 
-  render(){
-    const {coinsTable} = this.state;
-    return (
-        <Fragment>                
-            <MuiThemeProvider theme={this.theme}>
-                <MaterialTable
-                    title="Top 100 Cryptocurrencies by Market Capitalization"
-                    columns={coinsTable.columns}
-                    data={coinsTable.data}
-                    options={{
-                        search: true,
-                        exportButton: true,
-                        pageSize:10
-                    }}
-                />
-            </MuiThemeProvider>
-        </Fragment>
-    );
-  }
+  return (
+    <Paper className={classes.root}>
+        <Table className={classes.table} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              {props.columns.map(column => (
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{fontSize: '16px', fontWeight: '600'}}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+              return (
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                    <TableCell style={{width: '80px'}}>
+                        <img src={row.imageUrl} alt="icon" width="36"/>
+                    </TableCell>
+                    <TableCell className="cursor-pointer" onClick={() => handleClick(row)}>
+                        <p className="mb-0 font-weight-bold" style={{color: '#337ab7'}}>{row.name}</p>
+                        <span style={{color: '#888'}}>{row.symbol}</span>
+                    </TableCell>
+                    <TableCell>
+                       {row.price}
+                    </TableCell>
+                    <TableCell>
+                        {row.rank}
+                    </TableCell>
+                    <TableCell>
+                        {row.supply}
+                    </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      <TablePagination
+        rowsPerPageOptions={[10, 25, 100]}
+        component="div"
+        count={props.rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        backIconButtonProps={{
+          'aria-label': 'previous page',
+        }}
+        nextIconButtonProps={{
+          'aria-label': 'next page',
+        }}
+        onChangePage={handleChangePage}
+        onChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Paper>
+  );
 }
-
-export default DataTable;

@@ -1,16 +1,21 @@
 import React, {Fragment} from 'react'
 import Logo from '../assets/images/logo.svg'
+import {withRouter, Link} from 'react-router-dom'
 
 const Header = props => {
+    const openDialog = () => {
+        props.history.push('/portfolio')
+    }
     return (
         <Fragment>
             <div className="container">
                 <nav className="navbar navbar-expand-sm ">
-                    <a className="navbar-brand" href="#">
-                        <img src={Logo} alt="traveo_logo" width="24"/> <span className="logo">MUDREX</span>
-                    </a>
+                    <Link to="/">
+                        <img src={Logo} alt="traveo_logo" width="24"/> 
+                        <span className="logo">MUDREX</span>
+                    </Link>
                     <ul className="navbar-nav ml-auto">
-                        <li className="cursor-pointer" onClick={props.openDialog}>
+                        <li className="cursor-pointer portfolio-button" onClick={openDialog}>
                             My Portfolio
                         </li>
                     </ul>
@@ -20,4 +25,4 @@ const Header = props => {
     )
 }
 
-export default Header
+export default withRouter(Header)
