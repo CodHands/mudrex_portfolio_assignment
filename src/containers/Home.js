@@ -33,6 +33,7 @@ class Home extends Component {
             snackBar: false,
             loading: true,
             selectedDate: new Date(),
+            tooltip: false,
             columns: [
                 { label: '', id: 'imageUrl', headerStyle },
                 {
@@ -87,7 +88,7 @@ class Home extends Component {
                 }
             })
             this.checkExistingPortfolio(rows);
-            this.setState({loading: false, exchangeRates})
+            this.setState({loading: false, tooltip: true, exchangeRates})
         }
     }
 
@@ -176,6 +177,13 @@ class Home extends Component {
     //handle price and amount change
     handleChange = (event) => this.setState({[event.target.name] : event.target.value});
 
+    //hide tooltip
+    hideTooltip = () => {
+        this.setState({
+            tooltip: false
+        })
+    }
+
     render() {        
         return (
             <Layout>
@@ -184,12 +192,12 @@ class Home extends Component {
                    <ProgressBar/> 
                 </div>
 
-
-                 
+                {this.state.tooltip ? (
                     <div className="object">
                         <span>Please click here to add coin to Portfolio.</span>
-                        <p className="cross">&#10006;</p>
+                        <p className="cross" onClick={this.hideTooltip}>&#10006;</p>
                     </div>
+                ) : null}                 
                 
 
                 {/* Add Coin Modal */}
