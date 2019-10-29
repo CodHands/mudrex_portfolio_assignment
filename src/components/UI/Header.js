@@ -16,7 +16,7 @@ const Header = props => {
                     </Link>
                     <ul className="navbar-nav ml-auto">
                         <li className="cursor-pointer portfolio-button" onClick={openDialog}>
-                            My Portfolio
+                            My Portfolio <span className="font-weight-bold"> ({props.length}) </span>
                         </li>
                     </ul>
                 </nav>

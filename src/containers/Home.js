@@ -178,7 +178,7 @@ class Home extends Component {
 
     render() {
         return (
-            <Layout>
+            <Layout portfolioLength={this.state.portfolioData.length}>
                 {/* progress bar component */}
                 <div className="progressBar-container" hidden={!this.state.loading}>
                    <ProgressBar/> 
