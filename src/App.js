@@ -1,7 +1,11 @@
 import React from 'react';
-import Home from './containers/Home';
 import {BrowserRouter, Switch, Route} from 'react-router-dom'
+
+//components
+import Home from './containers/Home';
 import MyPortfolio from './containers/MyPortfolio';
+
+//material ui imports
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 function App() {

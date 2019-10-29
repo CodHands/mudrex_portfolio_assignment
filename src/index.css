@@ -107,6 +107,17 @@ tbody .MuiTableCell-root {
   margin-right: 15px;
 }
 
+.not-found {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+}
+
+.text-initial {
+  text-align: initial;
+}
+
 a, a:hover {
   text-decoration: none;
 }

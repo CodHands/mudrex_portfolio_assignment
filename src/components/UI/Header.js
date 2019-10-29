@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react'
-import Logo from '../assets/images/logo.svg'
+import Logo from '../../assets/images/logo.svg'
 import {withRouter, Link} from 'react-router-dom'
 
 const Header = props => {

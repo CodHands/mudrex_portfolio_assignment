@@ -8,6 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
+//icon import
+import DeleteButton from '../assets/images/delete-button.svg';
+
 const useStyles = makeStyles({
   root: {
     width: '100%',
@@ -44,7 +47,7 @@ function PortfolioTable(props) {
       if (mm < 10) {
         mm = '0' + mm;
       } 
-      var today = dd + '/' + mm + '/' + yyyy;
+      today = dd + '/' + mm + '/' + yyyy;
       return today
     }
 
@@ -65,9 +68,9 @@ function PortfolioTable(props) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                {props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row,index) => {
                   return (
-                    <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                    <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                         <TableCell style={{width: '80px'}}>
                             <img src={row.coin.imageUrl} alt="icon" width="36"/>
                         </TableCell>
@@ -86,6 +89,10 @@ function PortfolioTable(props) {
                         </TableCell>
                         <TableCell>
                            {getDate(row.selectedDate)}
+                        </TableCell>
+                        <TableCell>
+                           <img src={DeleteButton} width="24" alt="delete-icon" 
+                              className="cursor-pointer" onClick={() => props.removeCoin(index)}/>
                         </TableCell>
                     </TableRow>
                   );

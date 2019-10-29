@@ -1,4 +1,6 @@
-import React, {Fragment} from 'react';
+import React from 'react';
+import currencyFormatter from 'currency-formatter'
+
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -57,7 +59,7 @@ export default function StickyHeadTable(props) {
           <TableBody>
             {props.rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id} style={{background: `${row.added ? '#FFFEF4' : '#fff'}`}}>
                     <TableCell style={{width: '80px'}}>
                         <img src={row.imageUrl} alt="icon" width="36"/>
                     </TableCell>
@@ -69,10 +71,10 @@ export default function StickyHeadTable(props) {
                         <span style={{color: '#888'}}>{row.symbol}</span>
                     </TableCell>
                     <TableCell>
-                       {Number(row.priceusd).toFixed(2)}
+                       {currencyFormatter.format(Number(row.priceusd).toFixed(2), {code: 'USD'})}
                     </TableCell>
                     <TableCell>
-                       {row.priceinr}
+                       {currencyFormatter.format(Number(row.priceinr).toFixed(2), {code: 'INR'})}
                     </TableCell>
                     <TableCell>
                         {row.supply}

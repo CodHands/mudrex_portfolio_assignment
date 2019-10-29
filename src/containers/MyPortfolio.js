@@ -1,10 +1,11 @@
-import React, { Component } from 'react'
-import Layout from './../components/Layout';
+import React, { Component, Fragment } from 'react'
 import currencyFormatter from 'currency-formatter'
 
-//pie chart import
-import {Pie} from 'react-chartjs-2';
+//ui components
+import Layout from '../components/UI/Layout';
 import PortfolioTable from './../components/PortfolioTable';
+import PieChartContainer from './../components/PieChartContainer';
+import NoDataFound from './../components/NoDataFound';
 
 const colors = ['#F66D44','#FEAE65','#E6F69D','#AADEA7','#64C2A6','#2D87BB'];
 
@@ -27,87 +28,73 @@ class MyPortfolio extends Component {
                     id: 'amount',
                     headerStyle
                 },
-                { label: 'Buying Price (USD)', id: 'price', type: 'numeric', headerStyle},
-                { label: 'Buying Price (INR)', id: 'price', type: 'numeric', headerStyle},
-                { label: 'Date', id: 'selectedDate', type: 'numeric', headerStyle}
+                { label: 'Buying Price (USD)', id: 'priceusd', type: 'numeric', headerStyle},
+                { label: 'Buying Price (INR)', id: 'priceinr', type: 'numeric', headerStyle},
+                { label: 'Date', id: 'selectedDate', type: 'numeric', headerStyle},
+                { label: 'Remove', id: 'remove', headerStyle}
             ] 
         }
     }
 
+    //remove coin from portfolio
+    removeCoin = (index) => {
+        let updatedPortfolio = this.state.portfolio.filter((el,i) => index !== i);
+        this.setState({
+            portfolio: updatedPortfolio
+        })
+        localStorage.setItem('myPortfolio', JSON.stringify(updatedPortfolio))
+    }
+
     render() {
         const {portfolio} = this.state;
-        const total = portfolio.reduce((acc,x) => Number(acc) + Number(x.buyingPriceINR), 0);
-        const data = {
-            labels: portfolio.map((label) => label.coin.name),
-            datasets: [{
-                data: portfolio.map((label) => label.buyingPriceINR),
-                backgroundColor: colors
-            }]}
+        let total, data;
+        if(portfolio.length){
+            total = portfolio.reduce((acc,x) => Number(acc) + Number(x.buyingPriceINR), 0);
+            data = {
+                labels: portfolio.map((label) => label.coin.name),
+                datasets: [{
+                    data: portfolio.map((label) => label.buyingPriceINR),
+                    backgroundColor: colors
+                }]}
+        }
         return (
             <Layout>
-                <div className="row mb-5">
-                    <div className="col-5">
-                        <div className="stats-container">
-                            <h1 className="mb-0">{currencyFormatter.format(total, {code: 'INR'})}</h1>
-                            <p>Total Portfolio Price</p>
-                            <div className="row mt-5">
-                                    {
-                                        data.labels.map((el,index)=> {
-                                            return <div className="col-6 mb-3">
-                                                        <span className="coin-color" style={{
-                                                            background: `${data.datasets[0].backgroundColor[index]}`,
-                                                        }}></span><span>{el}</span>
-                                                        {/* <span>{data.datasets[0].data[index]}</span> */}
-                                                    </div>
-                                        })
-                                    }
+                {
+                    portfolio.length ? 
+                    <Fragment>
+                        <div className="row mb-5">
+                            <div className="col-5">
+                                <div className="stats-container">
+                                    <h1 className="mb-0">{currencyFormatter.format(total, {code: 'INR'})}</h1>
+                                    <p>Total Portfolio Price</p>
+                                    <div className="row mt-5 text-initial">
+                                            {
+                                                data.labels.map((el,index)=> {
+                                                    return <div className="col-6 mb-3" key={el}>
+                                                                <span className="coin-color" style={{
+                                                                    background: `${data.datasets[0].backgroundColor[index]}`,
+                                                                }}></span><span>{el}</span>
+                                                            </div>
+                                                })
+                                            }
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Pie Chart Container */}
+                            <div className="col-7">
+                                <PieChartContainer data={data}/>
                             </div>
                         </div>
-                    </div>
-                    <div className="col-7">
-                        <div style={{width: '60%', margin: '0 auto'}}>
-                            <Pie data={data}
-                                width={200}
-                                height={200}
-                                options={{ 
-                                            maintainAspectRatio: true,
-                                            legend: {
-                                                display: false,
-                                                position: 'top',
-                                                labels: {
-                                                    fontFamily: 'Barlow',
-                                                    fontSize: 14
-                                                }
-                                            },
-                                            plugins: {
-                                                labels: {
-                                                    render: 'value'
-                                                }
-                                            },
-                                            tooltips: {
-                                                callbacks: {
-                                                label: function(tooltipItem, data) {
-                                                    var dataset = data.datasets[tooltipItem.datasetIndex];
-                                                    var meta = dataset._meta[Object.keys(dataset._meta)[0]];
-                                                    var total = meta.total;
-                                                    var currentValue = dataset.data[tooltipItem.index];
-                                                    var percentage = parseFloat((currentValue/total*100).toFixed(1));
-                                                    return  percentage + '%';
-                                                },
-                                                title: function(tooltipItem, data) {
-                                                    return data.labels[tooltipItem[0].index];
-                                                }
-                                                }
-                                            } 
-                                    }}   
-                            />
-                        </div>
-                    </div>
-                </div>
-                <PortfolioTable 
-                    columns={this.state.columns}
-                    rows={this.state.portfolio}
-                />
+
+                        {/* portfolio table */}
+                        <PortfolioTable 
+                            columns={this.state.columns}
+                            rows={this.state.portfolio}
+                            removeCoin={this.removeCoin}
+                        />
+                    </Fragment> : <NoDataFound/>
+                }
             </Layout>
         )
     }

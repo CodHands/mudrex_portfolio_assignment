@@ -1,13 +1,11 @@
-import React, { Component, Fragment } from 'react'
-import currencyFormatter from 'currency-formatter'
-
+import React, { Component } from 'react'
 //material ui imports
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Snackbar from './../components/Snackbar';
+import Snackbar from '../components/UI/Snackbar';
+import ProgressBar from '../components/UI/ProgressBar';
 
 //components
-import MyPortfolio from './AddCoin';
-import Layout from './../components/Layout';
+import AddCoin from './AddCoin';
+import Layout from '../components/UI/Layout';
 import DataTable from '../components/DataTable';
 
 //api import
@@ -20,13 +18,13 @@ const headerStyle = {
     fontWeight: 'bold'
 }
 
-class home extends Component {
+class Home extends Component {
 
     constructor(props){
         super(props);
         this.state = {
             open: false,
-            portfolioData: localStorage.getItem('portfolio') ? localStorage.getItem('portfolio') : [],
+            portfolioData: [],
             rows: [],
             coin: '',
             amount: '',
@@ -55,15 +53,23 @@ class home extends Component {
     }
 
     componentDidMount(){
+        let portfolio = localStorage.getItem('myPortfolio');
+        if(portfolio){
+            this.setState({
+                portfolioData: JSON.parse(portfolio)
+            })
+        }
         this.fetchCoinMarketCap()
     };
 
+    //handle date change
     handleDateChange = date => {
         this.setState({
             selectedDate: date
         });
     };
 
+    //fetch top 100 coins and exchange rates for USD
     fetchCoinMarketCap = async() => {
         let response = await fetchCapData()
         let exchangeRates = await fetchExchangeRates();
@@ -74,16 +80,32 @@ class home extends Component {
                     name: coin.name,
                     symbol: coin.symbol,
                     priceusd: coin.quote['USD'].price,
-                    priceinr: currencyFormatter.format(exchangeRates.rates['INR']*coin.quote['USD'].price, {code: 'INR'}),
+                    priceinr: exchangeRates.rates['INR']*coin.quote['USD'].price,
                     rank: coin.cmc_rank,
                     supply: coin.circulating_supply,
                     id: index
                 }
             })
-            this.setState({rows, loading: false, exchangeRates})
+            this.checkExistingPortfolio(rows);
+            this.setState({loading: false, exchangeRates})
         }
     }
 
+    checkExistingPortfolio = (rows) => {
+        if(this.state.portfolioData.length){
+            rows.map((rw) => {
+                this.state.portfolioData.map((port) => {
+                    if(rw.name === port.coin.name){
+                        rw['added'] = true;
+                    }
+                })
+            })
+        }
+
+        this.setState({rows})
+    }
+
+    //open add coin modal
     handleClickOpen = (coin) => {
         this.setState({
             open: true,
@@ -93,6 +115,7 @@ class home extends Component {
     };
 
     handleSubmit = async() => {
+        //check if portfolio exists in locastorage
         let portfolio = JSON.parse(localStorage.getItem('myPortfolio'));
         const {amount,price, coin, selectedDate} = this.state;
         let body = {
@@ -102,30 +125,39 @@ class home extends Component {
             buyingPriceINR: Number(this.state.exchangeRates.rates['INR']*price), 
             coin
         }
+
+        //if portfolio exists, add or replace the coin details else add portfolio to localstorage
         if(portfolio){
             let match = false;
             portfolio.map((fl,index) => {
-                if(fl.coin.name == body.coin.name){
+                if(fl.coin.name === body.coin.name){
                     portfolio.splice(index,1)
                     portfolio.push(body);
+                    this.setState({portfolioData: portfolio})
                     localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
                     match = true;
                 }
             })
             if(!match){
                 portfolio.push(body);
+                this.setState({portfolioData: portfolio})
                 localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
             }
         } else {
+            this.setState({portfolioData: [portfolio]})
             localStorage.setItem('myPortfolio', JSON.stringify([body]));
-        }
+        }        
+
         this.setState({
             loading: true,
             open: false,
             amount: '',
             price: '',
         })
+
+        //async function to show delay 
         setTimeout(() => {
+            this.checkExistingPortfolio(this.state.rows);
             this.setState({
                 snackBar: true,
                 loading: false,
@@ -134,29 +166,29 @@ class home extends Component {
         }, 2000);
     };
 
+    //close modal
     handleClose = () => {
         this.setState({
             open: false
         })
     }
 
-    navigateToPortfolio = () => {
-        this.props.history.push('/portfolio')
-    }
-
+    //handle price and amount change
     handleChange = (event) => this.setState({[event.target.name] : event.target.value});
 
     render() {
         return (
             <Layout>
+                {/* progress bar component */}
                 <div className="progressBar-container" hidden={!this.state.loading}>
-                    <CircularProgress className="progressBar"/>
+                   <ProgressBar/> 
                 </div>
-                    <MyPortfolio 
+
+                {/* Add Coin Modal */}
+                    <AddCoin 
                         isOpen={this.state.open} 
                         handleSubmit={this.handleSubmit}
                         handleClose={this.handleClose}
-                        portfolioData={this.state.portfolioData}
                         handleChange={this.handleChange}
                         coinDetails={this.state.coin}
                         price={this.state.price}
@@ -164,15 +196,18 @@ class home extends Component {
                         selectedDate={this.state.selectedDate}
                         handleDateChange={this.handleDateChange}
                     />
-                        <DataTable 
-                            columns={this.state.columns} 
-                            rows={this.state.rows}
-                            isOpen={(data) => this.handleClickOpen(data)} 
-                            handleClose={this.handleClose} />
+                
+                {/* Coins Table */}
+                    <DataTable 
+                        columns={this.state.columns} 
+                        rows={this.state.rows}
+                        isOpen={(data) => this.handleClickOpen(data)} 
+                        handleClose={this.handleClose} />
+
                 {this.state.snackBar ? <Snackbar /> : null}
             </Layout>
         )
     }
 }
 
-export default home;
+export default Home;
