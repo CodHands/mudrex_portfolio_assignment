@@ -61,10 +61,10 @@ function PortfolioTable(props) {
                             <span style={{color: '#888'}}>{row.coin.symbol}</span>
                         </TableCell>
                         <TableCell>
-                            {row.amount}
+                            {Number(row.amount).toFixed(4)}
                         </TableCell>
                         <TableCell>
-                           {row.price.toFixed(4)}
+                           {Number(row.price).toFixed(4)}
                         </TableCell>
                     </TableRow>
                   );

@@ -6,22 +6,7 @@ import currencyFormatter from 'currency-formatter'
 import {Pie} from 'react-chartjs-2';
 import PortfolioTable from './../components/PortfolioTable';
 
-const data = {
-	labels: [
-		'Total Supply',
-		'Total Sale',
-		'Other Supply'
-	],
-	datasets: [{
-		data: [300, 50, 100],
-		backgroundColor: [
-            '#E38627',
-            '#C13C37',
-            '#6A2135'
-		]
-	}]
-};
-
+const colors = ['#F66D44','#FEAE65','#E6F69D','#AADEA7','#64C2A6','#2D87BB'];
 
 const headerStyle = {
     fontWeight: 'bold'
@@ -48,8 +33,8 @@ class MyPortfolio extends Component {
     }
 
     render() {
-        console.log(this.state);
-        const total = this.state.portfolio.reduce((acc,x) => Number(acc) + Number(x.price), 0);
+        const {portfolio} = this.state;
+        const total = portfolio.reduce((acc,x) => Number(acc) + Number(x.price), 0);
         return (
             <Layout>
                 <div className="row mb-5">
@@ -61,16 +46,43 @@ class MyPortfolio extends Component {
                     </div>
                     <div className="col-8">
                         <div style={{width: '60%', margin: '0 auto'}}>
-                            <Pie data={data}
+                            <Pie data={{
+                                labels: portfolio.map((label) => label.coin.name),
+                                datasets: [{
+                                    data: portfolio.map((label) => label.price),
+                                    backgroundColor: colors
+                                }]}}
                                 width={200}
                                 height={200}
-                                options={{ maintainAspectRatio: true,
+                                options={{ 
+                                            maintainAspectRatio: true,
                                             legend: {
                                                 display: false,
                                                 position: 'top',
                                                 labels: {
                                                     fontFamily: 'Barlow',
                                                     fontSize: 14
+                                                }
+                                            },
+                                            plugins: {
+                                                labels: {
+                                                    // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
+                                                    render: 'value'
+                                                }
+                                            },
+                                            tooltips: {
+                                                callbacks: {
+                                                label: function(tooltipItem, data) {
+                                                    var dataset = data.datasets[tooltipItem.datasetIndex];
+                                                    var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+                                                    var total = meta.total;
+                                                    var currentValue = dataset.data[tooltipItem.index];
+                                                    var percentage = parseFloat((currentValue/total*100).toFixed(1));
+                                                    return  percentage + '%';
+                                                },
+                                                title: function(tooltipItem, data) {
+                                                    return data.labels[tooltipItem[0].index];
+                                                }
                                                 }
                                             } 
                                     }}   

@@ -8,6 +8,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -28,6 +39,13 @@ const useStyles = makeStyles(theme => ({
   menu: {
     width: 200,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    width: 200
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  }
 }));
 
 function AddCoin(props) {
@@ -35,7 +53,7 @@ function AddCoin(props) {
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const {coinDetails,price, amount} = props;
-
+console.log(props.currencies)
   return (
     <div>
       <Dialog
@@ -62,6 +80,19 @@ function AddCoin(props) {
                       />
                   </div>
                   <div className="col-6">
+                      <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-simple-select-label">Choose Currency</InputLabel>
+                        <Select
+                          value={props.currency}
+                          onChange={props.handleCurrency}
+                        >
+                          {props.currencies.map((currency) => {
+                            return <MenuItem value={currency.id}>{currency.id}</MenuItem>
+                          })}
+                        </Select>
+                      </FormControl>
+                  </div>
+                  <div className="col-6">
                     <TextField
                         id="standard-name"
                         label="Buy Price"
@@ -72,6 +103,23 @@ function AddCoin(props) {
                         value={price}
                         required
                       />
+                  </div>
+                  <div className="col-6">
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                            disableToolbar
+                            variant="inline"
+                            format="MM/dd/yyyy"
+                            margin="normal"
+                            id="date-picker-inline"
+                            label="Choose Date"
+                            value={props.selectedDate}
+                            onChange={props.handleDateChange}
+                            KeyboardButtonProps={{
+                              'aria-label': 'change date',
+                            }}
+                        />
+                    </MuiPickersUtilsProvider>
                   </div>
               </div>
             </form>

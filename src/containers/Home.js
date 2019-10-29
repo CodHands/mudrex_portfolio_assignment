@@ -12,7 +12,7 @@ import Layout from './../components/Layout';
 import DataTable from '../components/DataTable';
 
 //api import
-import {fetchCapData, fetchExchangeRates} from '../services/marketService';
+import {fetchCapData, fetchExchangeRates, fetchCurrencies} from '../services/marketService';
 
 //config import
 import {IMAGE_URL} from '../config';
@@ -34,12 +34,15 @@ class home extends Component {
             open: false,
             portfolioData: localStorage.getItem('portfolio') ? localStorage.getItem('portfolio') : [],
             rows: [],
+            currencies: [],
             coin: '',
             amount: '',
             exchangeRates: {},
             price: '',
             snackBar: false,
             loading: true,
+            selectedDate: new Date(),
+            currency: '',
             columns: [
                 { label: '', id: 'imageUrl', headerStyle },
                 { label: 'Name', id: 'name', headerStyle },
@@ -60,11 +63,29 @@ class home extends Component {
 
     componentDidMount(){
         this.fetchCoinMarketCap()
-    }
+    };
+
+    handleDateChange = date => {
+        this.setState({
+            selectedDate: date
+        });
+    };
+    
+    handleCurrency = async(event) => {
+        await fetchExchangeRates(event.target.value);
+
+        this.setState({
+            currency: event.target.value
+        })
+    };
 
     fetchCoinMarketCap = async() => {
         let response = await fetchCapData()
         let exchangeRates = await fetchExchangeRates();
+        let currencies = await fetchCurrencies();
+        if(currencies && currencies.length){
+            this.setState({currencies})
+        }
         if(response){
             let rows = response.map((coin,index) => {
                 return {
@@ -89,7 +110,7 @@ class home extends Component {
         })
     };
 
-    handleSubmit = () => {
+    handleSubmit = async() => {
         let portfolio = JSON.parse(localStorage.getItem('myPortfolio'));
         const {amount,price, coin} = this.state;
         let body = {
@@ -130,6 +151,7 @@ class home extends Component {
     handleChange = (event) => this.setState({[event.target.name] : event.target.value});
 
     render() {
+        console.log(this.state.currency)
         return (
             <Layout>
                 <div className="progressBar-container" hidden={!this.state.loading}>
@@ -145,6 +167,11 @@ class home extends Component {
                         coinDetails={this.state.coin}
                         price={this.state.price}
                         amount={this.state.amount}
+                        selectedDate={this.state.selectedDate}
+                        currency={this.state.currency}
+                        handleDateChange={this.handleDateChange}
+                        handleCurrency={this.handleCurrency}
+                        currencies={this.state.currencies}
                     />
                         <DataTable 
                             columns={this.state.columns} 
