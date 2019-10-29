@@ -36,6 +36,7 @@ class home extends Component {
             rows: [],
             coin: '',
             amount: '',
+            exchangeRates: {},
             price: '',
             snackBar: false,
             loading: true,
@@ -76,7 +77,7 @@ class home extends Component {
                     id: index
                 }
             })
-            this.setState({rows, loading: false})
+            this.setState({rows, loading: false, exchangeRates})
         }
     }
 
@@ -91,12 +92,16 @@ class home extends Component {
     handleSubmit = () => {
         let portfolio = JSON.parse(localStorage.getItem('myPortfolio'));
         const {amount,price, coin} = this.state;
+        let body = {
+            amount,
+            price: this.state.exchangeRates.rates['INR']*price, 
+            coin
+        }
         if(portfolio){
-            portfolio.push({amount,price,coin});
+            portfolio.push(body);
             localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
         } else {
-            let array = [{amount,price,coin}];
-            localStorage.setItem('myPortfolio', JSON.stringify(array));
+            localStorage.setItem('myPortfolio', JSON.stringify([body]));
         }
         this.setState({
             loading: true,
