@@ -7,7 +7,7 @@ import PortfolioTable from './../components/PortfolioTable';
 import PieChartContainer from './../components/PieChartContainer';
 import NoDataFound from './../components/NoDataFound';
 
-const colors = ['#F66D44','#FEAE65','#E6F69D','#AADEA7','#64C2A6','#2D87BB'];
+const colors = ['#F66D44','#FEAE65','#E6F69D','#AADEA7','#64C2A6','#2D87BB', '#007CC3', '#7AC142', '#377B2B', '#FDBB2F'];
 
 const headerStyle = {
     fontWeight: 'bold'
@@ -66,7 +66,7 @@ class MyPortfolio extends Component {
                             <div className="col-5">
                                 <div className="stats-container">
                                     <h1 className="mb-0">{currencyFormatter.format(total, {code: 'INR'})}</h1>
-                                    <p>Total Portfolio Price</p>
+                                    <p>Total Portfolio Value</p>
                                     <div className="row mt-5 text-initial">
                                             {
                                                 data.labels.map((el,index)=> {

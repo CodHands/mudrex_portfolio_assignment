@@ -92,7 +92,7 @@ class Home extends Component {
     }
 
     checkExistingPortfolio = (rows) => {
-        if(this.state.portfolioData.length){
+        if(this.state.portfolioData.length && rows.length){
             rows.map((rw) => {
                 this.state.portfolioData.map((port) => {
                     if(rw.name === port.coin.name){
@@ -101,8 +101,8 @@ class Home extends Component {
                 })
             })
         }
-
         this.setState({rows})
+
     }
 
     //open add coin modal
@@ -144,8 +144,8 @@ class Home extends Component {
                 localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
             }
         } else {
-            this.setState({portfolioData: [portfolio]})
             localStorage.setItem('myPortfolio', JSON.stringify([body]));
+            this.setState({portfolioData: [body]})
         }        
 
         this.setState({
@@ -163,7 +163,7 @@ class Home extends Component {
                 loading: false,
                 selectedDate: new Date()
             })
-        }, 2000);
+        }, 1200);
     };
 
     //close modal
@@ -176,13 +176,21 @@ class Home extends Component {
     //handle price and amount change
     handleChange = (event) => this.setState({[event.target.name] : event.target.value});
 
-    render() {
+    render() {        
         return (
-            <Layout portfolioLength={this.state.portfolioData.length}>
+            <Layout>
                 {/* progress bar component */}
                 <div className="progressBar-container" hidden={!this.state.loading}>
                    <ProgressBar/> 
                 </div>
+
+
+                 
+                    <div className="object">
+                        <span>Please click here to add coin to Portfolio.</span>
+                        <p className="cross">&#10006;</p>
+                    </div>
+                
 
                 {/* Add Coin Modal */}
                     <AddCoin 

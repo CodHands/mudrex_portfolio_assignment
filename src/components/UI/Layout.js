@@ -4,7 +4,7 @@ import Header from './Header';
 const Layout = props => {
     return (
         <Fragment>
-            <Header length={props.portfolioLength}/>
+            <Header/>
             <div className="app-container pt-5">
                 {props.children}
             </div>
