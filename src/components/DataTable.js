@@ -34,7 +34,6 @@ export default function StickyHeadTable(props) {
   };
 
   const handleClick = (row) => {
-    console.log(row)
       props.isOpen(row);
   }
   
@@ -62,15 +61,18 @@ export default function StickyHeadTable(props) {
                     <TableCell style={{width: '80px'}}>
                         <img src={row.imageUrl} alt="icon" width="36"/>
                     </TableCell>
+                    <TableCell>
+                        {row.rank}
+                    </TableCell>
                     <TableCell className="cursor-pointer" onClick={() => handleClick(row)}>
                         <p className="mb-0 font-weight-bold" style={{color: '#337ab7'}}>{row.name}</p>
                         <span style={{color: '#888'}}>{row.symbol}</span>
                     </TableCell>
                     <TableCell>
-                       {row.price}
+                       {Number(row.priceusd).toFixed(2)}
                     </TableCell>
                     <TableCell>
-                        {row.rank}
+                       {row.priceinr}
                     </TableCell>
                     <TableCell>
                         {row.supply}

@@ -3,7 +3,6 @@ import currencyFormatter from 'currency-formatter'
 
 //material ui imports
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Snackbar from './../components/Snackbar';
 
 //components
@@ -12,7 +11,7 @@ import Layout from './../components/Layout';
 import DataTable from '../components/DataTable';
 
 //api import
-import {fetchCapData, fetchExchangeRates, fetchCurrencies} from '../services/marketService';
+import {fetchCapData, fetchExchangeRates} from '../services/marketService';
 
 //config import
 import {IMAGE_URL} from '../config';
@@ -25,16 +24,10 @@ class home extends Component {
 
     constructor(props){
         super(props);
-        this.theme = createMuiTheme({
-            typography: {
-                fontFamily: 'Barlow'
-              }
-        });
         this.state = {
             open: false,
             portfolioData: localStorage.getItem('portfolio') ? localStorage.getItem('portfolio') : [],
             rows: [],
-            currencies: [],
             coin: '',
             amount: '',
             exchangeRates: {},
@@ -42,16 +35,16 @@ class home extends Component {
             snackBar: false,
             loading: true,
             selectedDate: new Date(),
-            currency: '',
             columns: [
                 { label: '', id: 'imageUrl', headerStyle },
-                { label: 'Name', id: 'name', headerStyle },
-                { label: 'Price (in INR)', id: 'price', type: 'numeric', headerStyle},
                 {
                     label: 'Rank',
                     id: 'rank',
                     headerStyle
                 },
+                { label: 'Name', id: 'name', headerStyle },
+                { label: 'Price (USD)', id: 'priceusd', type: 'numeric', headerStyle},
+                { label: 'Price (INR)', id: 'priceinr', type: 'numeric', headerStyle},
                 {
                     label: 'Circulating Supply',
                     id: 'supply',
@@ -70,29 +63,18 @@ class home extends Component {
             selectedDate: date
         });
     };
-    
-    handleCurrency = async(event) => {
-        await fetchExchangeRates(event.target.value);
-
-        this.setState({
-            currency: event.target.value
-        })
-    };
 
     fetchCoinMarketCap = async() => {
         let response = await fetchCapData()
         let exchangeRates = await fetchExchangeRates();
-        let currencies = await fetchCurrencies();
-        if(currencies && currencies.length){
-            this.setState({currencies})
-        }
         if(response){
             let rows = response.map((coin,index) => {
                 return {
                     imageUrl: `${IMAGE_URL}${coin.slug.toLowerCase()}.png`, 
                     name: coin.name,
                     symbol: coin.symbol,
-                    price: currencyFormatter.format(exchangeRates.rates['INR']*coin.quote['USD'].price, {code: 'INR'}),
+                    priceusd: coin.quote['USD'].price,
+                    priceinr: currencyFormatter.format(exchangeRates.rates['INR']*coin.quote['USD'].price, {code: 'INR'}),
                     rank: coin.cmc_rank,
                     supply: coin.circulating_supply,
                     id: index
@@ -112,15 +94,28 @@ class home extends Component {
 
     handleSubmit = async() => {
         let portfolio = JSON.parse(localStorage.getItem('myPortfolio'));
-        const {amount,price, coin} = this.state;
+        const {amount,price, coin, selectedDate} = this.state;
         let body = {
             amount,
-            price: this.state.exchangeRates.rates['INR']*price, 
+            selectedDate,
+            buyingPriceUSD: Number(price),
+            buyingPriceINR: Number(this.state.exchangeRates.rates['INR']*price), 
             coin
         }
         if(portfolio){
-            portfolio.push(body);
-            localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
+            let match = false;
+            portfolio.map((fl,index) => {
+                if(fl.coin.name == body.coin.name){
+                    portfolio.splice(index,1)
+                    portfolio.push(body);
+                    localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
+                    match = true;
+                }
+            })
+            if(!match){
+                portfolio.push(body);
+                localStorage.setItem('myPortfolio', JSON.stringify(portfolio));
+            }
         } else {
             localStorage.setItem('myPortfolio', JSON.stringify([body]));
         }
@@ -133,7 +128,8 @@ class home extends Component {
         setTimeout(() => {
             this.setState({
                 snackBar: true,
-                loading: false
+                loading: false,
+                selectedDate: new Date()
             })
         }, 2000);
     };
@@ -151,13 +147,11 @@ class home extends Component {
     handleChange = (event) => this.setState({[event.target.name] : event.target.value});
 
     render() {
-        console.log(this.state.currency)
         return (
             <Layout>
                 <div className="progressBar-container" hidden={!this.state.loading}>
                     <CircularProgress className="progressBar"/>
                 </div>
-                    <MuiThemeProvider theme={this.theme}>
                     <MyPortfolio 
                         isOpen={this.state.open} 
                         handleSubmit={this.handleSubmit}
@@ -168,17 +162,13 @@ class home extends Component {
                         price={this.state.price}
                         amount={this.state.amount}
                         selectedDate={this.state.selectedDate}
-                        currency={this.state.currency}
                         handleDateChange={this.handleDateChange}
-                        handleCurrency={this.handleCurrency}
-                        currencies={this.state.currencies}
                     />
                         <DataTable 
                             columns={this.state.columns} 
                             rows={this.state.rows}
                             isOpen={(data) => this.handleClickOpen(data)} 
                             handleClose={this.handleClose} />
-                    </MuiThemeProvider>
                 {this.state.snackBar ? <Snackbar /> : null}
             </Layout>
         )

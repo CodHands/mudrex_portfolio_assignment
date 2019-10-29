@@ -8,19 +8,17 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
-
 const useStyles = makeStyles({
-    root: {
-      width: '100%',
-    },
-    tableWrapper: {
-      maxHeight: 440,
-      overflow: 'auto',
-    },
-  });
+  root: {
+    width: '100%',
+  },
+  tableWrapper: {
+    maxHeight: 440,
+    overflow: 'auto',
+  }
+});
 
 function PortfolioTable(props) {
-    console.log(props)
     const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -33,6 +31,23 @@ function PortfolioTable(props) {
       setRowsPerPage(+event.target.value);
       setPage(0);
     };
+
+    const getDate = (date) => {
+      var today = new Date(date);
+      var dd = today.getDate();
+      var mm = today.getMonth() + 1; //January is 0!
+      
+      var yyyy = today.getFullYear();
+      if (dd < 10) {
+        dd = '0' + dd;
+      } 
+      if (mm < 10) {
+        mm = '0' + mm;
+      } 
+      var today = dd + '/' + mm + '/' + yyyy;
+      return today
+    }
+
     return (
         <Paper className={classes.root}>
             <Table className={classes.table} aria-label="customized table">
@@ -64,7 +79,13 @@ function PortfolioTable(props) {
                             {Number(row.amount).toFixed(4)}
                         </TableCell>
                         <TableCell>
-                           {Number(row.price).toFixed(4)}
+                           {Number(row.buyingPriceUSD).toFixed(4)}
+                        </TableCell>
+                        <TableCell>
+                           {Number(row.buyingPriceINR).toFixed(4)}
+                        </TableCell>
+                        <TableCell>
+                           {getDate(row.selectedDate)}
                         </TableCell>
                     </TableRow>
                   );

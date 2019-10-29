@@ -27,31 +27,46 @@ class MyPortfolio extends Component {
                     id: 'amount',
                     headerStyle
                 },
-                { label: 'Price (in INR)', id: 'price', type: 'numeric', headerStyle}
+                { label: 'Buying Price (USD)', id: 'price', type: 'numeric', headerStyle},
+                { label: 'Buying Price (INR)', id: 'price', type: 'numeric', headerStyle},
+                { label: 'Date', id: 'selectedDate', type: 'numeric', headerStyle}
             ] 
         }
     }
 
     render() {
         const {portfolio} = this.state;
-        const total = portfolio.reduce((acc,x) => Number(acc) + Number(x.price), 0);
+        const total = portfolio.reduce((acc,x) => Number(acc) + Number(x.buyingPriceINR), 0);
+        const data = {
+            labels: portfolio.map((label) => label.coin.name),
+            datasets: [{
+                data: portfolio.map((label) => label.buyingPriceINR),
+                backgroundColor: colors
+            }]}
         return (
             <Layout>
                 <div className="row mb-5">
-                    <div className="col-4">
+                    <div className="col-5">
                         <div className="stats-container">
                             <h1 className="mb-0">{currencyFormatter.format(total, {code: 'INR'})}</h1>
                             <p>Total Portfolio Price</p>
+                            <div className="row mt-5">
+                                    {
+                                        data.labels.map((el,index)=> {
+                                            return <div className="col-6 mb-3">
+                                                        <span className="coin-color" style={{
+                                                            background: `${data.datasets[0].backgroundColor[index]}`,
+                                                        }}></span><span>{el}</span>
+                                                        {/* <span>{data.datasets[0].data[index]}</span> */}
+                                                    </div>
+                                        })
+                                    }
+                            </div>
                         </div>
                     </div>
-                    <div className="col-8">
+                    <div className="col-7">
                         <div style={{width: '60%', margin: '0 auto'}}>
-                            <Pie data={{
-                                labels: portfolio.map((label) => label.coin.name),
-                                datasets: [{
-                                    data: portfolio.map((label) => label.price),
-                                    backgroundColor: colors
-                                }]}}
+                            <Pie data={data}
                                 width={200}
                                 height={200}
                                 options={{ 
@@ -66,7 +81,6 @@ class MyPortfolio extends Component {
                                             },
                                             plugins: {
                                                 labels: {
-                                                    // render 'label', 'value', 'percentage', 'image' or custom function, default is 'percentage'
                                                     render: 'value'
                                                 }
                                             },

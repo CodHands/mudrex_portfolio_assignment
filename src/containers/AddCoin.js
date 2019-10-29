@@ -53,7 +53,6 @@ function AddCoin(props) {
   const classes = useStyles();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const {coinDetails,price, amount} = props;
-console.log(props.currencies)
   return (
     <div>
       <Dialog
@@ -81,14 +80,15 @@ console.log(props.currencies)
                   </div>
                   <div className="col-6">
                       <FormControl className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-label">Choose Currency</InputLabel>
+                        <InputLabel id="demo-simple-select-label">Currency</InputLabel>
                         <Select
-                          value={props.currency}
-                          onChange={props.handleCurrency}
+                          value="BTC"
+                          disabled
                         >
-                          {props.currencies.map((currency) => {
+                          {/* {props.currencies.map((currency) => {
                             return <MenuItem value={currency.id}>{currency.id}</MenuItem>
-                          })}
+                          })} */}
+                          <MenuItem value="BTC">BTC</MenuItem>
                         </Select>
                       </FormControl>
                   </div>
