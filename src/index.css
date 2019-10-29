@@ -30,6 +30,8 @@ code {
   font-weight: 400;
 }
 
+/* material css */
+
 .MuiPaper-elevation2 {
   padding: 0 15px;
 }
@@ -73,6 +75,8 @@ tbody .MuiTableCell-root {
   color: #fff;
 }
 
+
+/* progres bar */
 .progressBar-container {
   position: absolute;
   top: 50%;
@@ -121,6 +125,8 @@ tbody .MuiTableCell-root {
 a, a:hover {
   text-decoration: none;
 }
+
+/* tooltip css */
 
 .object {
   animation: MoveUpDown 2s ease infinite;

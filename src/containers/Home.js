@@ -118,6 +118,7 @@ class Home extends Component {
     handleSubmit = async() => {
         //check if portfolio exists in locastorage
         let portfolio = JSON.parse(localStorage.getItem('myPortfolio'));
+
         const {amount,price, coin, selectedDate} = this.state;
         let body = {
             amount,
@@ -192,12 +193,12 @@ class Home extends Component {
                    <ProgressBar/> 
                 </div>
 
-                {this.state.tooltip ? (
+                {/* {this.state.tooltip ? (
                     <div className="object">
                         <span>Please click here to add coin to Portfolio.</span>
                         <p className="cross" onClick={this.hideTooltip}>&#10006;</p>
                     </div>
-                ) : null}                 
+                ) : null}  */}                
                 
 
                 {/* Add Coin Modal */}
