@@ -88,7 +88,10 @@ class Home extends Component {
                 }
             })
             this.checkExistingPortfolio(rows);
-            this.setState({loading: false, tooltip: true, exchangeRates})
+            this.setState({loading: false, exchangeRates})
+            if(!localStorage.getItem('tooltip')){
+                this.setState({tooltip: true})
+            }
         }
     }
 
@@ -114,6 +117,7 @@ class Home extends Component {
             tooltip: false,
             coin
         })
+        localStorage.setItem('tooltip', true)
     };
 
     handleSubmit = async() => {
@@ -184,6 +188,7 @@ class Home extends Component {
         this.setState({
             tooltip: false
         })
+        localStorage.setItem('tooltip', true)
     }
 
     render() {        
