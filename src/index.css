@@ -131,8 +131,8 @@ a, a:hover {
 .object {
   animation: MoveUpDown 2s ease infinite;
   position: absolute;
-  left: 30%;
-  top: 30%;
+  left: 31%;
+  top: 25%;
 }
 
 .object span {
@@ -175,9 +175,9 @@ a, a:hover {
 
 @keyframes MoveUpDown {
   0%, 100% {
-    top: 40%;
+    top: 30%;
   }
   50% {
-    top: 38%;
+    top: 28%;
   }
 }

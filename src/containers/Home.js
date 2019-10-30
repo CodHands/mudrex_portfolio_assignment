@@ -193,12 +193,12 @@ class Home extends Component {
                    <ProgressBar/> 
                 </div>
 
-                {/* {this.state.tooltip ? (
+                {this.state.tooltip ? (
                     <div className="object">
                         <span>Please click here to add coin to Portfolio.</span>
                         <p className="cross" onClick={this.hideTooltip}>&#10006;</p>
                     </div>
-                ) : null}  */}                
+                ) : null}                 
                 
 
                 {/* Add Coin Modal */}
