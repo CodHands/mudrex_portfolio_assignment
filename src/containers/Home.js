@@ -111,6 +111,7 @@ class Home extends Component {
         this.setState({
             open: true,
             snackBar: false,
+            tooltip: false,
             coin
         })
     };
