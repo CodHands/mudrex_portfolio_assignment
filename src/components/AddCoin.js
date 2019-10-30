@@ -11,7 +11,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 
 //component
-import AddCoinForm from './../components/AddCoinForm';
+import AddCoinForm from './AddCoinForm';
 
 //style function
 const useStyles = makeStyles(theme => ({

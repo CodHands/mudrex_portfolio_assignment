@@ -4,7 +4,7 @@ import Snackbar from '../components/UI/Snackbar';
 import ProgressBar from '../components/UI/ProgressBar';
 
 //components
-import AddCoin from './AddCoin';
+import AddCoin from '../components/AddCoin';
 import Layout from '../components/UI/Layout';
 import DataTable from '../components/DataTable';
 
